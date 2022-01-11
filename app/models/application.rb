@@ -1,6 +1,8 @@
 class Application < ApplicationRecord
+    validates :name, presence: true
+
     before_create :generate_token
-    has_many :chat, dependent: :destroy
+    has_many :chats, dependent: :destroy
 
     def as_json(options={})
         options[:except] ||= [:id]

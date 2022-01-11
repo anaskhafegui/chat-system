@@ -17,12 +17,22 @@ module Api
             end    
 
             def show_by_token
-                application = Application.find_by(token: params[:token]);
+                application = get_application_by_token;
                 render json: {status: 'SUCCESS', message: 'Loaded Application', data:application}, status: :ok
             end
+            
+            def show_application_chats
+                chats = get_application_by_token.chats;
+                render json: {status: 'SUCCESS', message: 'Loaded Application Chats', data:chats }, status: :ok
+            end
+            
 
             private def application_params
                 params.permit(:name)
+            end
+
+            private def get_application_by_token
+                return Application.find_by(token: params[:token]);
             end
         end
     end

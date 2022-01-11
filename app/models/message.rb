@@ -1,10 +1,13 @@
 class Message < ApplicationRecord
+    validates :text, presence: true
     before_create :set_chat_messages_count
     after_create :set_message_number 
 
     belongs_to :chat
+    validates_presence_of :chat 
+
     def as_json(options={})
-        options[:except] ||= [:id]
+        options[:except] ||= [:id, :chat_id]
         super(options)
     end
 
