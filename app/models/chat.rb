@@ -3,7 +3,7 @@ class Chat < ApplicationRecord
     after_create :set_chat_number 
     belongs_to :application
     validates_presence_of :application 
-    has_many :message, dependent: :destroy
+    has_many :messages, dependent: :destroy
     def as_json(options={})
         options[:except] ||= [:id, :application_id]
         super(options)
