@@ -3,15 +3,17 @@ Rails.application.routes.draw do
     namespace 'v1' do
       # applications routes
       scope 'applications' do
+          get  '/', to: 'applications#index'
+          get  '/search', to: 'applications#search'
           post '/', to: 'applications#create'
-          get '/', to: 'applications#index'
-          get ':token', to: 'applications#show_by_token'
-          get ':token/chats/:chat_number', to: 'applications#show_message_by_applicatiopn_token_and_chat_number'
-          get ':token/chats', to: 'applications#show_application_chats'
-          post ':token/chats', to: 'applications#create_chat_by_token'
+
+          scope ':token/chats' do
+            get  '/', to: 'applications#show_application_chats'
+            post '/', to: 'applications#create_chat_by_token'
+            get  '/:chat_number/messages', to: 'applications#show_messages_by_application_token_and_chat_number'
+            post '/:chat_number/messages', to: 'applications#create_message_by_application_token_and_chat_number'
+        end
       end
-      resources :chats
-      resources :messages
     end
   end
 end

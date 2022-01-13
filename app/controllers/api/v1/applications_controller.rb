@@ -3,47 +3,70 @@ module Api
         class ApplicationsController < ApplicationController 
             # authenticate_token by token exepct app index for testing
             # require exist chat number 
-            before_action :require_login!,:require_vaild_chat_number!, except: [:index,:create]
-            
+            before_action :require_login!, except: [:index,:create,:search]
+            before_action :require_vaild_chat_number!, only: [:create_message_by_application_token_and_chat_number,:show_messages_by_application_token_and_chat_number]
+  
             def index
                 applications = Application.order('created_at DESC');
                 render json: {status: 'SUCCESS', message: 'Loaded Applications', data:applications}, status: :ok
             end
 
             def create
-                application = Application.new(application_params)
-
+                Application.__elasticsearch__.import force: true    
+                application = Application.create(application_params)
+                
                 if application.save
-                    render json: {status: 'SUCCESS', message: 'Saved Applications', data:application}, status: :ok
+                    render json: {status: 'SUCCESS', message: 'Application was created successfully', data:application}, status: :ok
                 else 
                     render json: {status: 'Failed', message: 'Application not saved', data:application.errors}, status: :unprocessable_entity    
                 end
             end    
 
-            def create_chat_by_token
-                chats = get_application_by_token.chats.create()
-                render json: {status: 'SUCCESS', message: 'Saved Chats', data:chats}, status: :ok
-            end  
-
             def show_by_token
                 application = get_application_by_token;
                 render json: {status: 'SUCCESS', message: 'Loaded Application', data:application}, status: :ok
             end
-            
+
+            def create_chat_by_token
+                chat = get_application_by_token.chats.create()
+                if chat.save
+                    render json: {status: 'SUCCESS', message: 'Chat was created successfully', data:chat}, status: :ok
+                else 
+                    render json: {status: 'Failed', message: 'Chat not saved', data:chat.errors}, status: :unprocessable_entity   
+                end
+            end  
+
             def show_application_chats
                 chats = get_application_by_token.chats;
                 render json: {status: 'SUCCESS', message: 'Loaded Application Chats', data:chats }, status: :ok
             end
 
-            def show_message_by_applicatiopn_token_and_chat_number
-                message = get_application_by_token_and_chat_number.messages
-
-                if message
-                    render json: {status: 'SUCCESS', message: 'Message', data:message}, status: :ok
+            def create_message_by_application_token_and_chat_number
+                Message.__elasticsearch__.import force: true   
+                message = get_application_by_token_and_chat_number.messages.create(message_params)
+                if message.save
+                    render json: {status: 'SUCCESS', message: 'Message was created successfully', data:message}, status: :ok
                 else 
-                    render json: {status: 'Failed', message: 'No Message', data:message.errors}, status: :unprocessable_entity    
+                    render json: {status: 'Failed', message: 'Message not saved', data:message.errors}, status: :unprocessable_entity   
                 end
-            end    
+            end 
+
+            def show_messages_by_application_token_and_chat_number 
+                unless params[:query].blank?
+                     return search_by_message_text 
+                end
+                messages = get_application_by_token_and_chat_number.messages
+                total = get_application_by_token_and_chat_number.messages.count
+                data = {
+                        "messages":       messages,
+                        "total_messages":  total 
+                    }
+                 if messages
+                    render json: {status: 'SUCCESS', message: 'Message', data:data}, status: :ok
+                else 
+                    render json: {status: 'Failed', message: 'No Message', data:messages.errors}, status: :unprocessable_entity    
+                end
+            end      
 
             private 
             
@@ -74,6 +97,17 @@ module Api
                 def require_vaild_chat_number!
                     get_application_by_token_and_chat_number || render_unauthorized('Chat Number Doesnt exsist')
                 end
+                
+                def search_by_message_text
+                    @results = Message.search( params[:query] )
+                    @records = @results.records 
+                    @total = @results.count 
+                    data = {
+                        "messages":       @records,
+                        "total_messages":  @total 
+                    }
+                    render json: {status: 'SUCCESS', message: 'Application ', data: data  }, status: :ok
+                end 
         end
     end
 end
