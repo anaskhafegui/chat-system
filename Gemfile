@@ -15,6 +15,9 @@ gem 'elasticsearch-model'
 gem 'elasticsearch-api'
 gem 'elastic-transport'
 gem 'elasticsearch-rails'
+gem 'sidekiq'
+gem 'sidekiq-scheduler'
+gem 'sinatra', github: 'sinatra/sinatra'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production

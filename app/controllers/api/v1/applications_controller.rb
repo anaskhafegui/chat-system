@@ -3,19 +3,12 @@ module Api
         class ApplicationsController < ApplicationController 
             # authenticate_token by token exepct app index for testing
             # require exist chat number 
-            before_action :require_login!, except: [:index,:create,:search]
+            before_action :require_login!, except: [:index,:create]
             before_action :require_vaild_chat_number!, only: [:create_message_by_application_token_and_chat_number,:show_messages_by_application_token_and_chat_number]
-  
-            def index
-                applications = Application.order('created_at DESC');
-                render json: {status: 'SUCCESS', message: 'Loaded Applications', data:applications}, status: :ok
-            end
-
+     
             def create
-                Application.__elasticsearch__.import force: true    
-                application = Application.create(application_params)
-                
-                if application.save
+                 application = Application.create(application_params)
+                 if application.save
                     render json: {status: 'SUCCESS', message: 'Application was created successfully', data:application}, status: :ok
                 else 
                     render json: {status: 'Failed', message: 'Application not saved', data:application.errors}, status: :unprocessable_entity    
@@ -23,17 +16,13 @@ module Api
             end    
 
             def show_by_token
-                application = get_application_by_token;
-                render json: {status: 'SUCCESS', message: 'Loaded Application', data:application}, status: :ok
+                application = get_application_by_token
+                render json: {status: 'SUCCESS', message: 'Loaded Application',data: application }, status: :ok
             end
 
             def create_chat_by_token
-                chat = get_application_by_token.chats.create()
-                if chat.save
-                    render json: {status: 'SUCCESS', message: 'Chat was created successfully', data:chat}, status: :ok
-                else 
-                    render json: {status: 'Failed', message: 'Chat not saved', data:chat.errors}, status: :unprocessable_entity   
-                end
+                CreateChatWorker.perform_async(get_application_by_token.chats.create)
+                render json: {status: 'SUCCESS', message: 'Chat was created successfully' }, status: :ok
             end  
 
             def show_application_chats
@@ -43,12 +32,8 @@ module Api
 
             def create_message_by_application_token_and_chat_number
                 Message.__elasticsearch__.import force: true   
-                message = get_application_by_token_and_chat_number.messages.create(message_params)
-                if message.save
-                    render json: {status: 'SUCCESS', message: 'Message was created successfully', data:message}, status: :ok
-                else 
-                    render json: {status: 'Failed', message: 'Message not saved', data:message.errors}, status: :unprocessable_entity   
-                end
+                CreateMessageWorker.perform_async(get_application_by_token_and_chat_number.messages.create(message_params))
+                render json: {status: 'SUCCESS', message: 'Message was created successfully'}, status: :ok
             end 
 
             def show_messages_by_application_token_and_chat_number 
@@ -66,7 +51,13 @@ module Api
                 else 
                     render json: {status: 'Failed', message: 'No Message', data:messages.errors}, status: :unprocessable_entity    
                 end
-            end      
+            end    
+            
+            
+            def index
+                applications = Application.order('created_at DESC')
+                render json: {status: 'SUCCESS', message: 'Loaded Applications', data:applications}, status: :ok
+            end
 
             private 
             
@@ -75,7 +66,7 @@ module Api
                 end
 
                 def get_application_by_token
-                    return Application.find_by(token: params[:token]);
+                    return Application.find_by(token: params[:token])
                 end
 
                 def get_application_by_token_and_chat_number

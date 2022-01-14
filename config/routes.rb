@@ -1,10 +1,23 @@
 Rails.application.routes.draw do
+  require 'sidekiq/web'
+
+# Configure Sidekiq-specific session middleware
+Sidekiq::Web.use ActionDispatch::Cookies
+Sidekiq::Web.use ActionDispatch::Session::CookieStore, key: "_interslice_session"
+
+  mount Sidekiq::Web => "/sidekiq"
+  # ...
+
+
   namespace 'api' do
     namespace 'v1' do
       # applications routes
+      get  '/', to: 'applications#report'
+    
       scope 'applications' do
+          get  '/report', to: 'applications#report'
           get  '/', to: 'applications#index'
-          get  '/search', to: 'applications#search'
+          get  '/:token', to: 'applications#show_by_token'
           post '/', to: 'applications#create'
 
           scope ':token/chats' do
