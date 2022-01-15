@@ -31,7 +31,7 @@ module Api
             end
 
             def create_message_by_application_token_and_chat_number
-                # Message.__elasticsearch__.import force: true   
+                Message.__elasticsearch__.import force: true   
                 CreateMessageWorker.perform_async(get_application_by_token_and_chat_number.messages.create(message_params))
                 render json: {status: 'SUCCESS', message: 'Message was created successfully'}, status: :ok
             end 
