@@ -1,0 +1,10 @@
+database_1  | 2022-01-14 23:58:26+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.0.27-1debian10 started.
+database_1  | 2022-01-14 23:58:26+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+database_1  | 2022-01-14 23:58:26+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.0.27-1debian10 started.
+database_1  | 2022-01-14 23:58:26+00:00 [Note] [Entrypoint]: Initializing database files
+database_1  | 2022-01-14T23:58:26.610230Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.0.27) initializing of server in progress as process 43
+database_1  | 2022-01-14T23:58:26.612744Z 0 [ERROR] [MY-010457] [Server] --initialize specified but the data directory has files in it. Aborting.
+database_1  | 2022-01-14T23:58:26.612767Z 0 [ERROR] [MY-013236] [Server] The designated data directory /var/lib/mysql/ is unusable. You can remove all files that the server added to it.
+database_1  | 2022-01-14T23:58:26.612869Z 0 [ERROR] [MY-010119] [Server] Aborting
+database_1  | 2022-01-14T23:58:26.613091Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.27)  MySQL Community Server - GPL.
+chat-app-docker_database_1 exited with code 1
