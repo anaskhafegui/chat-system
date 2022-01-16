@@ -4,6 +4,7 @@ class Application < ApplicationRecord
     validates :name, presence: true
 
     before_create :generate_token
+    
     has_many :chats, dependent: :destroy
 
     def as_json(options={})

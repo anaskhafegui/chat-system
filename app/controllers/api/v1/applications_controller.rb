@@ -3,13 +3,17 @@ module Api
         class ApplicationsController < ApplicationController 
             # authenticate_token by token exepct app index for testing
             # require exist chat number 
-            before_action :require_login!, except: [:index,:create]
+            def validate_running
+                render json: {status: 'SUCCESS', message: 'Chat app runnig successfully', data:nil}, status: :ok
+            end
+
+            before_action :require_login!, except: [:index,:create, :validate_running]
             before_action :require_vaild_chat_number!, only: [:create_message_by_application_token_and_chat_number,:show_messages_by_application_token_and_chat_number]
-     
+            
             def create
                  application = Application.create(application_params)
                  if application.save
-                    render json: {status: 'SUCCESS', message: 'Application was created successfully', data:application}, status: :ok
+                    render json: {status: 'SUCCESS', message: 'Application created successfully', data:application}, status: :ok
                 else 
                     render json: {status: 'Failed', message: 'Application not saved', data:application.errors}, status: :unprocessable_entity    
                 end
@@ -22,7 +26,7 @@ module Api
 
             def create_chat_by_token
                 CreateChatWorker.perform_async(get_application_by_token.chats.create)
-                render json: {status: 'SUCCESS', message: 'Chat was created successfully' }, status: :ok
+                render json: {status: 'SUCCESS', message: 'Chat created successfully' }, status: :ok
             end  
 
             def show_application_chats
@@ -33,7 +37,7 @@ module Api
             def create_message_by_application_token_and_chat_number
                 Message.__elasticsearch__.import force: true   
                 CreateMessageWorker.perform_async(get_application_by_token_and_chat_number.messages.create(message_params))
-                render json: {status: 'SUCCESS', message: 'Message was created successfully'}, status: :ok
+                render json: {status: 'SUCCESS', message: 'Message created successfully'}, status: :ok
             end 
 
             def show_messages_by_application_token_and_chat_number 

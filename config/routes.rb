@@ -12,7 +12,7 @@ Sidekiq::Web.use ActionDispatch::Session::CookieStore, key: "_interslice_session
   namespace 'api' do
     namespace 'v1' do
       # applications routes
-      get  '/', to: 'applications#report'
+      get  '/', to: 'applications#validate_running'
     
       scope 'applications' do
           get  '/report', to: 'applications#report'
