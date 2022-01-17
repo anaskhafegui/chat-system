@@ -23,6 +23,10 @@ docker-compose up -d
 
 ## How to run the test suite
 
+```bash
+docker-compose exec -e "RAILS_ENV=test" app bundle exec rspec
+```
+
 ## Services
 
 * sidekiq

@@ -264,8 +264,9 @@ DEPENDENCIES
   mysql2 (>= 0.4.4, < 0.6.0)
   puma (~> 3.11)
   rails (~> 5.2.6)
-  rspec-mocks
+  rspec-core
   rspec-rails (~> 4.1.0)
+  rspec-support
   shoulda-matchers (~> 4.5, >= 4.5.1)
   sidekiq
   sidekiq-scheduler

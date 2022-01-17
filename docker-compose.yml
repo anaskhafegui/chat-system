@@ -2,7 +2,6 @@ version: '3.4'
 
 services:
   app:
-    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -24,7 +23,6 @@ services:
     restart: always
     image: mysql:5.7
     command: --disable-partition-engine-check    
-    restart: always
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql

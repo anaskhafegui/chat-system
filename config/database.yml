@@ -12,36 +12,22 @@
 default: &default
   adapter: mysql2
   encoding: utf8
-  database: chat_instabug
-  username: root
-  password: password
-  port: 3306
-  host: localhost
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USER'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  port: <%= ENV['DATABASE_PORT'] || '3306' %>
+  host: <%= ENV['DATABASE_HOST'] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  socket: /tmp/mysql.sock
-  # database: <%= ENV['DATABASE_NAME'] %>
-  # username: <%= ENV['DATABASE_USER'] %>
-  # password: <%= ENV['DATABASE_PASSWORD'] %>
-  # port: <%= ENV['DATABASE_PORT'] || '3306' %>
-  # host: <%= ENV['DATABASE_HOST'] %>
-  # pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # socket: /var/run/mysqld/mysqld.sock
+  socket: /var/run/mysqld/mysqld.sock
   
 development:
-  database: <%= ENV['DATABASE_NAME_DEV'] %>
+  database: <%= ENV['DATABASE_NAME_TEST'] %>
   <<: *default
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  database: chat_test
-  username: root
-  password: password
-  port: 3306
-  host: localhost
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  socket: /tmp/mysql.sock
   <<: *default
 
 

@@ -40,6 +40,10 @@ gem 'bootsnap', '>= 1.1.0', require: false
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  
+  # %w[rspec-core rspec-expectations rspec-mocks rspec-support].each do |lib|
+  #   gem lib, :git => "https://github.com/rspec/#{lib}.git", :branch => 'main'
+  # end
   gem 'rspec-rails', '~> 4.1.0'
 end
 
@@ -55,7 +59,6 @@ group :test do
   gem 'factory_bot_rails', '~> 6.1'
   gem 'faker'
   gem 'shoulda-matchers', '~> 4.5', '>= 4.5.1'
-  gem 'rspec-mocks'
 end
 
 
