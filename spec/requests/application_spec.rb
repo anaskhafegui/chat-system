@@ -2,17 +2,6 @@ require 'rails_helper'
 
 RSpec.describe "Applications", type: :request do
   
-  # application endpoint
-  describe "GET /api/v1/applications" do
-    before { get '/api/v1/applications' }
-    it 'returns applications' do
-      expect(response.status).to be(200)
-    end
-    it 'returns status code 200' do
-      expect(response).to have_http_status(200)
-    end
-  end
-
   describe "POST /api/v1/applications" do
     it "create a Application fail because it does not have name" do
       headers = { "ACCEPT" => "application/json" }
@@ -73,6 +62,22 @@ RSpec.describe "Applications", type: :request do
       chat = app.chats.create
       get "/api/v1/applications/" + app.token + "/chats/" + chat.chat_number.to_s + "/messages", :headers => headers
       expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+
+
+  describe "GET /api/v1/applications/{token}/chats/{chat_number}/messages" do
+    it "Search On Messages fail if doesnt exist" do
+      headers = { "ACCEPT" => "application/json" }
+      app  = Application.create(name: "anas medhat")
+      chat = app.chats.create
+      message  = chat.messages.create(text: "test")
+      get "/api/v1/applications/" + app.token + "/chats/" + chat.chat_number.to_s + "/messages?query=anas", :headers => headers
+      expect(response.content_type).to eq("application/json")
+      jsons = JSON.parse(response.body)['data']['total_messages']
+      expect(jsons).to eq(0)
       expect(response).to have_http_status(:ok)
     end
   end

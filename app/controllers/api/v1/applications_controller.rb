@@ -13,55 +13,43 @@ module Api
             def create
                  application = Application.create(application_params)
                  if application.save
-                    render json: {status: 'SUCCESS', message: 'Application created successfully', data:application}, status: :ok
+                     render json: ApplicationRepresenter.new(application).as_json, status: :ok
                 else 
                     render json: {status: 'Failed', message: 'Application not saved', data:application.errors}, status: :unprocessable_entity    
                 end
             end    
 
             def show_by_token
-                application = get_application_by_token
-                render json: {status: 'SUCCESS', message: 'Loaded Application',data: application }, status: :ok
+                render json: ApplicationRepresenter.new(get_application_by_token).as_json, status: :ok   
             end
 
             def create_chat_by_token
-                CreateChatWorker.perform_async(get_application_by_token.chats.create)
-                render json: {status: 'SUCCESS', message: 'Chat created successfully' }, status: :ok
+                chat = CreateChatWorker.new.perform(get_application_by_token)
+                render json: ChatRepresenter.new(chat).as_json, status: :ok
             end  
 
             def show_application_chats
-                chats = get_application_by_token.chats;
-                render json: {status: 'SUCCESS', message: 'Loaded Application Chats', data:chats }, status: :ok
+                render json: ChatsRepresenter.new(get_application_by_token.chats).as_json, status: :ok
             end
 
             def create_message_by_application_token_and_chat_number
                 Message.__elasticsearch__.import force: true   
-                CreateMessageWorker.perform_async(get_application_by_token_and_chat_number.messages.create(message_params))
-                render json: {status: 'SUCCESS', message: 'Message created successfully'}, status: :ok
+                message = CreateMessageWorker.new.perform(get_application_by_token_and_chat_number.messages.create(message_params))
+                render json: MessageRepresenter.new(message).as_json, status: :ok
             end 
 
             def show_messages_by_application_token_and_chat_number 
+                #query should be string
                 unless params[:query].blank?
                      return search_by_message_text 
                 end
                 messages = get_application_by_token_and_chat_number.messages
-                total = get_application_by_token_and_chat_number.messages.count
-                data = {
-                        "messages":       messages,
-                        "total_messages":  total 
-                    }
                  if messages
-                    render json: {status: 'SUCCESS', message: 'Message', data:data}, status: :ok
+                    render json: MessagesRepresenter.new(messages).as_json, status: :ok
                 else 
                     render json: {status: 'Failed', message: 'No Message', data:messages.errors}, status: :unprocessable_entity    
                 end
             end    
-            
-            
-            def index
-                applications = Application.order('created_at DESC')
-                render json: {status: 'SUCCESS', message: 'Loaded Applications', data:applications}, status: :ok
-            end
 
             private 
             
@@ -94,14 +82,10 @@ module Api
                 end
                 
                 def search_by_message_text
-                    @results = Message.search( params[:query] )
-                    @records = @results.records 
-                    @total = @results.count 
-                    data = {
-                        "messages":       @records,
-                        "total_messages":  @total 
-                    }
-                    render json: {status: 'SUCCESS', message: 'Application ', data: data  }, status: :ok
+                    chat_id = get_application_by_token_and_chat_number.id
+                    @results = Message.search( params[:query] , chat_id)
+                    @messages = @results.records 
+                    render json:MessagesRepresenter.new(@messages).as_json, status: :ok
                 end 
         end
     end

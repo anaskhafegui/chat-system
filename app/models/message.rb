@@ -2,6 +2,7 @@ class Message < ApplicationRecord
     include Elasticsearch::Model
     include Elasticsearch::Model::Callbacks
 
+
     validates :text, presence: true
     before_create :set_chat_messages_count
     after_create :set_message_number 
@@ -9,28 +10,32 @@ class Message < ApplicationRecord
     validates_presence_of :chat 
 
     def as_json(options={})
-        options[:except] ||= [:id, :chat_id]
+        options[:except] ||= [:id]
         super(options)
     end
 
     
     def as_indexed_json(_options = {})
-    as_json(only:[:text])
+    as_json(only:[:text,:chat_id])
    end
 
  
     
-    def self.search(query)
-        __elasticsearch__.search(
-        {
-            query: {
-                multi_match: {
-                query: query,
-                fields: ['text']
-                }
-            },
-            # more blocks will go IN HERE. Keep reading!
-        })
+    def self.search(query,chat_id)
+        __elasticsearch__.search({
+            query: { 
+          bool: { filter: {
+                   term: {"chat_id" => chat_id.to_s}
+                },
+                must: {
+                    query_string: {
+                     query: query,
+                    fields: ['text']
+                    }
+                  }
+                },
+          },
+          })
     end 
 
 

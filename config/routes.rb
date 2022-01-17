@@ -16,7 +16,6 @@ Sidekiq::Web.use ActionDispatch::Session::CookieStore, key: "_interslice_session
     
       scope 'applications' do
           get  '/report', to: 'applications#report'
-          get  '/', to: 'applications#index'
           get  '/:token', to: 'applications#show_by_token'
           post '/', to: 'applications#create'
 

@@ -3,11 +3,11 @@ class CreateMessageWorker
     queue_as :messages
     sidekiq_options retry: false
 
-    def perform(chat)
+    def perform(message)
       if message.save
-        render json: {status: 'SUCCESS', message: 'Message was created successfully', data:message}, status: :ok
+        return message
       else 
-        render json: {status: 'Failed', message: 'Message not saved', data:message.errors}, status: :unprocessable_entity   
+        return message.errors
       end        
   end
   

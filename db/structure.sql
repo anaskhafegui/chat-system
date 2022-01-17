@@ -20,7 +20,7 @@ CREATE TABLE `applications` (
   `updated_at` datetime NOT NULL,
   `token` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `ar_internal_metadata`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -46,7 +46,7 @@ CREATE TABLE `chats` (
   PRIMARY KEY (`id`),
   KEY `index_chats_on_application_id` (`application_id`),
   CONSTRAINT `fk_rails_3b5054ba3a` FOREIGN KEY (`application_id`) REFERENCES `applications` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -61,7 +61,7 @@ CREATE TABLE `messages` (
   PRIMARY KEY (`id`),
   KEY `index_messages_on_chat_id` (`chat_id`),
   CONSTRAINT `fk_rails_0f670de7ba` FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `schema_migrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
