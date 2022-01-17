@@ -66,8 +66,6 @@ RSpec.describe "Applications", type: :request do
     end
   end
 
-
-
   describe "GET /api/v1/applications/{token}/chats/{chat_number}/messages" do
     it "Search On Messages fail if doesnt exist" do
       headers = { "ACCEPT" => "application/json" }

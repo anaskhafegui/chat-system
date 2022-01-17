@@ -1,4 +1,3 @@
-
 # Chat
 
 This is a Dockerized Chat app, using ruby on rails.
@@ -14,10 +13,19 @@ This is a Dockerized Chat app, using ruby on rails.
 
 ## Run the app in your machine: -
 
+* clone the project and setup the env file
+
 ```bash
 
-git clone https://github.com/anaskhafegui/chat-app
-cd chat-app
+git clone https://github.com/anaskhafegui/chat-system
+cd chat-system
+```
+
+* rename the .env-example to .env and edit the environment variable as you like
+
+* run the docker-compose
+
+```bash
 docker-compose up -d
 ```
 
@@ -39,7 +47,7 @@ docker-compose exec -e "RAILS_ENV=test" app bundle exec rspec
 * POST requests
 
 ```url
-/application
+/applications
 /{application_token}/chats
 /{application_token}/chats/{chat_number}/messages
 ```
@@ -71,7 +79,7 @@ Verifies that application is up and running.
 {
     "status": "SUCCESS", 
     "message": "Chat app runnig successfully",
-    "data": nil 
+    "data": null 
 }
 ```
 
@@ -95,14 +103,13 @@ Creates a new application.
 ```json
 
 {
-    "status": "SUCCESS", 
-    "message": "Application created successfully", 
-    "data":{
-        "name": "NewApplication",
-        "chats_count": 0,
-        "created_at": "2022-01-15T19:51:10.000Z",
-        "updated_at": "2022-01-15T19:51:10.000Z",
-        "token": "Ph3Sekqq99LTjrTTngbwXAqwHeTBtKoXvG3dRAz4GL6gEot4MTkCgfnCPGn8"
+    "status": "SUCCESS",
+    "message": "Chat created successfully",
+    "data": {
+        "app_name": "NewApplication",
+        "chat_number": 1,
+        "messages_count": 0,
+        "created_at": "2022-01-17T21:03:45.000Z"
     }
 }
 ```
@@ -116,8 +123,14 @@ Creates a new chat with an application token provided
 ```json
 
 {
-    "status": "SUCCESS", 
-    "message": "Chat created successfully", 
+    "status": "SUCCESS",
+    "message": "Chat created successfully",
+    "data": {
+        "app_name": "NewApplications",
+        "chat_number": 1,
+        "messages_count": 0,
+        "created_at": "2022-01-17T21:03:45.000Z"
+    }
 }
 ```
 
@@ -125,7 +138,7 @@ Creates a new chat with an application token provided
 
 Creates a new message with an application token and chat number provided
 
-##### Sample body request (required):
+##### Sample body request (required)
 
 ```json
 
@@ -134,13 +147,20 @@ Creates a new message with an application token and chat number provided
 }
 ```
 
-##### Sample response:
+##### Sample response
 
 ```json
 
 {
-    "status": "SUCCESS", 
-    "message": "Message created successfully", 
+    "status": "SUCCESS",
+    "message": "Message created successfully",
+    "data": {
+        "app_name": "NewApplications",
+        "chat_number": 1,
+        "message_number": 2,
+        "text": "Hello",
+        "created_at": "2022-01-17T21:05:42.000Z"
+    }
 }
 ```
 
@@ -159,16 +179,16 @@ Displays all chats listed in the applicatio.
     "message": "Loaded Application Chats",
     "data": [
         {
+            "app_name": "NewApplications",
             "chat_number": 1,
-            "messages_count": 1,
-            "created_at": "2022-01-15T20:50:33.000Z",
-            "updated_at": "2022-01-15T21:03:34.000Z"
+            "messages_count": 2,
+            "created_at": "2022-01-17T21:03:45.000Z"
         },
         {
+            "app_name": "NewApplications",
             "chat_number": 2,
             "messages_count": 0,
-            "created_at": "2022-01-15T21:05:32.000Z",
-            "updated_at": "2022-01-15T21:05:32.000Z"
+            "created_at": "2022-01-17T21:06:24.000Z"
         }
     ]
 }
@@ -182,7 +202,7 @@ Displays all messages listed in that chat.
 
 ```url
 
-query={word to search}
+query="{word to search}" (must be string in "example")
 ```
 
 Sample response:
@@ -191,23 +211,25 @@ Sample response:
 
 {
     "status": "SUCCESS",
-    "message": "Message",
+    "message": "Loaded Application Messages",
     "data": {
+        "total_messages": 2,
         "messages": [
             {
-                "text": "Anas",
+                "app_name": "NewApplications",
+                "chat_number": 1,
                 "message_number": 1,
-                "created_at": "2022-01-15T21:03:34.000Z",
-                "updated_at": "2022-01-15T21:03:34.000Z"
+                "text": "anas",
+                "created_at": "2022-01-17T21:05:27.000Z"
             },
             {
-                "text": "Hello",
+                "app_name": "NewApplications",
+                "chat_number": 1,
                 "message_number": 2,
-                "created_at": "2022-01-15T21:08:12.000Z",
-                "updated_at": "2022-01-15T21:08:12.000Z"
+                "text": "Hello",
+                "created_at": "2022-01-17T21:05:42.000Z"
             }
-        ],
-        "total_messages": 2
+        ]
     }
 }
 ```
